@@ -4,7 +4,10 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rovify/core/constants/colors.dart';
+import 'package:rovify/presentation/blocs/auth/auth_bloc.dart';
+import 'package:rovify/presentation/blocs/auth/auth_state.dart';
 import 'package:rovify/presentation/screens/auth/signup_bottom_sheet.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -116,10 +119,10 @@ class _SplashScreenState extends State<SplashScreen> {
     });
   }
 
-  void _goToSignUpSheet() {
+  Future <void> _goToSignUpSheet() async{
     _timer?.cancel(); // Stop splash screen animation
     // Wait for bottom sheet to close
-    showModalBottomSheet(
+    await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -146,7 +149,41 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     final current = splashData[_currentIndex];
 
-    return GestureDetector(
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthError) {
+          Future.delayed(Duration(milliseconds: 100), () {
+            // Use context safely by checking if widget is still mounted
+            if (context.mounted) {
+              showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  backgroundColor: Colors.white,
+                  title: Row(
+                    children: const [
+                      Icon(Icons.error_outline, color: Colors.red),
+                      SizedBox(width: 8),
+                      Text("Oops!"),
+                    ],
+                  ),
+                  content: Text(state.message),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text("OK"),
+                    ),
+                  ],
+                ),
+              );
+            }
+          });
+        }
+      },
+     
+    child: GestureDetector(
       onTapDown: (_) => setState(() => _isHeldDown = true),
       onTapUp: (_) => setState(() => _isHeldDown = false),
       onTapCancel: () => setState(() => _isHeldDown = false),
@@ -452,6 +489,7 @@ class _SplashScreenState extends State<SplashScreen> {
           ),
         ),
       )
+      ),
     );
   }
 }
