@@ -141,7 +141,7 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
     
       child: Container(
         height: MediaQuery.of(context).size.height * 0.85,
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
