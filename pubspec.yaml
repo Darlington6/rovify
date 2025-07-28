@@ -19,5 +19,9 @@ flutter:
   uses-material-design: true
   
   assets:
-    - assets/
-    - assets/images/
+    - assets/images/red_face.png
+    - assets/images/dipped_monalisa.png
+    - assets/images/bell.png
+    - assets/images/profile.png
+    - assets/images/pirate king.png
+    - assets/images/rhodey.png

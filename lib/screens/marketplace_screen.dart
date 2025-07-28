@@ -1,38 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-// Updated color constants to match Figma design
-const kBackgroundBlue = Color(0xFF1746A2); // Blue background like Figma
-const kCardBackground = Color(0xFFF8F8F8);
-const kButtonOrange = Color(0xFFFF6A00);
-const kTextDark = Color(0xFF222B45);
-const kTextGray = Color(0xFF8F9BB3);
-const kTextWhite = Color(0xFFFFFFFF);
+import 'nft_detail_screen.dart'; 
 
 class MarketplaceScreen extends StatefulWidget {
+  const MarketplaceScreen({super.key});
+
   @override
-  _MarketplaceScreenState createState() => _MarketplaceScreenState();
+  State<MarketplaceScreen> createState() => _MarketplaceScreenState();
 }
 
 class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  int _selectedIndex = 3; // Marketplace tab (index 3 for mobile design)
-  String _selectedTime = '24h';
-  String _selectedCategory = 'All Categories';
-  String _selectedType = 'Type';
-
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    // Set status bar to transparent
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-      ),
-    );
   }
 
   @override
@@ -44,415 +26,394 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kBackgroundBlue, // Blue background like Figma
-      body: SafeArea(
+      backgroundColor: Colors.white, // Change background to white
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0), // Adjust padding
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(),
-            _buildTabBar(),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  // Trending Tab
-                  SingleChildScrollView(
-                    child: Container(
-                      margin: EdgeInsets.only(top: 0, bottom: 16),
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(32),
-                          topRight: Radius.circular(32),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Filter Row
-                          Row(
-                            children: [
-                              _buildDropdown(_selectedTime, ['24h', '7d', '30d'], (val) {
-                                setState(() {
-                                  _selectedTime = val!;
-                                });
-                              }),
-                              SizedBox(width: 8),
-                              _buildDropdown(_selectedCategory, ['All Categories', 'Art', 'Music'], (val) {
-                                setState(() {
-                                  _selectedCategory = val!;
-                                });
-                              }),
-                              SizedBox(width: 8),
-                              _buildDropdown(_selectedType, ['Type', 'Auction', 'Buy Now'], (val) {
-                                setState(() {
-                                  _selectedType = val!;
-                                });
-                              }),
-                            ],
-                          ),
-                          SizedBox(height: 24),
-                          // Top Collection Section
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text('Top Collection', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: kTextDark)),
-                              Text('See all', style: TextStyle(color: kButtonOrange, fontWeight: FontWeight.bold, fontSize: 14)),
-                            ],
-                          ),
-                          SizedBox(height: 12),
-                          SizedBox(
-                            height: 220, // Increased height to show buttons properly
-                            child: ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: [
-                                NFTCard(
-                                  imageUrl: 'assets/images/dipped_monalisa.png',
-                                  title: 'Dripped Monalisa',
-                                  author: 'The Pirate King',
-                                  price: '0.084Eth',
-                                  showBidButton: true, // Enable bid button
-                                  isLocalAsset: true,
-                                ),
-                                NFTCard(
-                                  imageUrl: 'assets/images/red_face.png',
-                                  title: 'Red Face',
-                                  author: 'Rhodey',
-                                  price: '0.044Eth',
-                                  showBidButton: true, // Enable bid button
-                                  isLocalAsset: true,
-                                ),
-                                NFTCard(
-                                  imageUrl: 'assets/images/dipped_monalisa.png', // Use existing image for third card
-                                  title: 'The Man Exclusive 2025',
-                                  author: 'Aura Kimani',
-                                  price: '0.084Eth',
-                                  showBidButton: true, // Enable bid button
-                                  isLocalAsset: true,
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 32),
-                          // Best Sellers Section
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text('Best Sellers', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: kTextDark)),
-                              Text('See all', style: TextStyle(color: kButtonOrange, fontWeight: FontWeight.bold, fontSize: 14)),
-                            ],
-                          ),
-                          SizedBox(height: 12),
-                          SizedBox(
-                            height: 220, // Increased height to show buttons properly
-                            child: ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: [
-                                NFTCard(
-                                  imageUrl: 'assets/images/dipped_monalisa.png',
-                                  title: 'Digital Masterpiece',
-                                  author: 'CryptoArtist',
-                                  price: '0.156Eth',
-                                  showBidButton: true, // Enable bid button
-                                  isLocalAsset: true,
-                                ),
-                                NFTCard(
-                                  imageUrl: 'assets/images/red_face.png',
-                                  title: 'Red Face',
-                                  author: 'Rhodey',
-                                  price: '0.089Eth',
-                                  showBidButton: true, // Enable bid button
-                                  isLocalAsset: true,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+            const SizedBox(height: 50), // Adjust for status bar height and top padding
+            // --- Custom Header (replaces AppBar) ---
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CircleAvatar(
+                  radius: 24,
+                  backgroundImage: AssetImage('assets/images/profile.png'), 
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Location",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
                       ),
                     ),
-                  ),
-                  // Top Tab
-                  Center(child: Text('Top', style: TextStyle(color: kTextDark))),
-                  // Watchlist Tab
-                  Center(child: Text('Watchlist', style: TextStyle(color: kTextDark))),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: Colors.white, // White background for header
-      child: Row(
-        children: [
-          // Profile picture
-          CircleAvatar(
-            backgroundImage: NetworkImage('https://randomuser.me/api/portraits/women/44.jpg'),
-            radius: 22,
-          ),
-          SizedBox(width: 12),
-          // Location info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Location', style: TextStyle(fontSize: 12, color: kTextGray)),
-                Row(
-                  children: [
-                    Icon(Icons.location_on, size: 16, color: kTextGray),
-                    SizedBox(width: 4),
-                    Text('Nairobi, Kenya', style: TextStyle(fontWeight: FontWeight.bold, color: kTextDark, fontSize: 14)),
+                    Row(
+                      children: const [
+                        Icon(Icons.location_on, size: 16, color: Colors.black),
+                        SizedBox(width: 4),
+                        Text(
+                          "Nairobi, Kenya",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
+                ),
+                IconButton(
+                  icon: const Icon(Icons.notifications_none, size: 28, color: Colors.black),
+                  onPressed: () {
+                    // Handle notification bell press
+                  },
                 ),
               ],
             ),
-          ),
-          // Notification bell and menu
-          Icon(Icons.notifications_none, color: kTextGray, size: 24),
-          SizedBox(width: 16),
-          Icon(Icons.more_vert, color: kTextGray, size: 24),
-        ],
-      ),
-    );
-  }
+            const SizedBox(height: 24),
 
-  Widget _buildTabBar() {
-    return Container(
-      color: Colors.white, // White background for tab bar
-      child: TabBar(
-        controller: _tabController,
-        labelColor: kTextDark,
-        unselectedLabelColor: kTextGray,
-        indicatorColor: kButtonOrange,
-        labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
-        tabs: [
-          Tab(text: 'Trending'),
-          Tab(text: 'Top'),
-          Tab(text: 'Watchlist'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNavigationBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.grey.withOpacity(0.2))),
-      ),
-      child: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        backgroundColor: Colors.white,
-        selectedItemColor: kButtonOrange,
-        unselectedItemColor: kTextGray,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Explore'),
-          BottomNavigationBarItem(icon: Icon(Icons.play_circle_outline), label: 'Stream'),
-          BottomNavigationBarItem(
-            icon: Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: kButtonOrange,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.add, color: Colors.white, size: 20),
+            // --- Tab Bar ---
+            TabBar(
+              controller: _tabController,
+              labelColor: Colors.black, // Active tab color
+              unselectedLabelColor: Colors.grey, // Inactive tab color
+              indicatorColor: Colors.black, // Indicator line color
+              indicatorSize: TabBarIndicatorSize.label, // Indicator matches label width
+              labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              tabs: const [
+                Tab(text: "Trending"),
+                Tab(text: "Top"),
+                Tab(text: "Watchlist"),
+              ],
             ),
-            label: 'Create',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_bag), label: 'Marketplace'),
-          BottomNavigationBarItem(icon: Icon(Icons.mic), label: 'Echo'),
-        ],
-      ),
-    );
-  }
+            const SizedBox(height: 20), // Spacing after tabs
 
-  Widget _buildDropdown(String value, List<String> items, ValueChanged<String?> onChanged) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: kCardBackground,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Color(0xFFE4E9F2)),
-      ),
-      child: DropdownButton<String>(
-        value: value,
-        underline: SizedBox(),
-        icon: Icon(Icons.keyboard_arrow_down, color: kTextGray, size: 16),
-        style: TextStyle(
-          color: kTextDark,
-          fontSize: 14,
-          fontWeight: FontWeight.normal,
-        ),
-        items: items.map((String item) {
-          return DropdownMenuItem<String>(
-            value: item,
-            child: Text(
-              item,
-              style: TextStyle(
-                color: kTextDark,
-                fontSize: 14,
-                fontWeight: FontWeight.normal,
-              ),
+            // --- Filter Row ---
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildFilterDropdown('24h', ['1h', '6h', '12h', '24h', '7d', '30d']),
+                _buildFilterDropdown('All Categories', ['Art', 'Collectibles', 'Music', 'Photography']),
+                _buildFilterDropdown('Type', ['Auction', 'Fixed Price']),
+              ],
             ),
-          );
-        }).toList(),
-        onChanged: onChanged,
-      ),
-    );
-  }
-}
+            const SizedBox(height: 20), // Spacing after filters
 
-class NFTCard extends StatelessWidget {
-  final String imageUrl;
-  final String title;
-  final String author;
-  final String price;
-  final bool showBidButton;
-  final bool isLocalAsset;
-
-  const NFTCard({
-    required this.imageUrl,
-    required this.title,
-    required this.author,
-    required this.price,
-    this.showBidButton = false,
-    this.isLocalAsset = false,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 160,
-      margin: EdgeInsets.only(right: 16),
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: kCardBackground,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Image container
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              height: 100, // Fixed height for consistency
-              width: double.infinity,
-              child: imageUrl.isNotEmpty
-                  ? isLocalAsset
-                      ? Image.asset(
-                          imageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => Container(
-                            color: Colors.grey[300],
-                            child: Icon(Icons.broken_image, size: 40, color: Colors.grey[500]),
-                          ),
-                        )
-                      : Image.network(
-                          imageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => Container(
-                            color: Colors.grey[300],
-                            child: Icon(Icons.broken_image, size: 40, color: Colors.grey[500]),
-                          ),
-                        )
-                  : Container(
-                      color: Colors.grey[300],
-                      child: Icon(Icons.image, size: 40, color: Colors.grey[500]),
-                    ),
-            ),
-          ),
-          SizedBox(height: 8),
-          // Title
-          Text(
-            title,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: kTextDark,
-              fontSize: 14,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          SizedBox(height: 4),
-          // Author row with proper circular avatar
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 8,
-                backgroundImage: NetworkImage('https://randomuser.me/api/portraits/men/32.jpg'),
-              ),
-              SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  author,
-                  style: TextStyle(fontSize: 12, color: kTextGray),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+            // --- Top Collection Section ---
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Top Collection",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: 6),
-          // Price
-          Text(
-            price,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: kTextDark,
-              fontSize: 13,
-            ),
-          ),
-          // Bid button - properly sized and positioned
-          if (showBidButton) ...[
-            SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              height: 32,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: kButtonOrange,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  elevation: 0,
-                  padding: EdgeInsets.symmetric(horizontal: 8),
-                ),
-                child: Text(
-                  'Place a bid',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                TextButton(
+                  onPressed: () {
+                    // Handle "See all" for Top Collection
+                  },
+                  child: const Text(
+                    "See all",
+                    style: TextStyle(color: Colors.orange, fontSize: 14),
                   ),
                 ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _nftCard(
+                    context,
+                    title: "Dripped Monalisa",
+                    creatorName: "The Pirate King",
+                    price: "0.084Eth",
+                    image: 'assets/images/dipped_monalisa.png', 
+                    profileImage: 'assets/images/pirate king.png',
+                    showBidButton: true,
+                  ),
+                  _nftCard(
+                    context,
+                    title: "Red Face",
+                    creatorName: "Rhodey",
+                    price: "0.044Eth",
+                    image: 'assets/images/red_face.png',
+                    profileImage: 'assets/images/rhodey.png',
+                    showBidButton: true,
+                  ),
+                  _nftCard(
+                    context,
+                    title: "The Man 2025",
+                    creatorName: "Luffy",
+                    price: "7.8 ETH",
+                    image: 'assets/images/pirate_king.png', 
+                    profileImage: 'assets/images/profile.png',
+                    showBidButton: false,
+                  ),
+                ],
               ),
             ),
+            const SizedBox(height: 30), // Spacing between sections
+
+            // --- Best Sellers Section ---
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Best Sellers",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Handle "See all" for Best Sellers
+                  },
+                  child: const Text(
+                    "See all",
+                    style: TextStyle(color: Colors.orange, fontSize: 14),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _nftCard(
+                    context,
+                    title: "Mona Lisa",
+                    creatorName: "Leonardo",
+                    price: "4.2 ETH",
+                    image: 'assets/images/dipped_monalisa.png',
+                    profileImage: 'assets/images/pirate king.png',
+                    showBidButton: false,
+                  ),
+                  _nftCard(
+                    context,
+                    title: "Red Face",
+                    creatorName: "AbstractX",
+                    price: "2.3 ETH",
+                    image: 'assets/images/red_face.png',
+                    profileImage: 'assets/images/rhodey.png',
+                    showBidButton: false,
+                  ),
+                  _nftCard(
+                    context,
+                    title: "The Man 2025",
+                    creatorName: "GhostMaker",
+                    price: "3.0 ETH",
+                    image: 'assets/images/placeholder_nft.png', 
+                    profileImage: 'assets/images/profile.png',
+                    showBidButton: false,
+                  ),
+                  // Add more NFT cards as needed for Best Sellers
+                ],
+              ),
+            ),
+            const SizedBox(height: 20), // Padding before bottom nav if content is short
           ],
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed, // Important for more than 3 items
+        selectedItemColor: Colors.orange, // Selected item color
+        unselectedItemColor: Colors.grey, // Unselected item color
+        currentIndex: 3, // Set to the index of 'Marketplace' if that's the current screen
+        onTap: (index) {
+          // Handle navigation here based on index
+          // For example, using a PageView or Navigator
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.explore), // Or Image.asset('assets/icons/explore.png')
+            label: "Explore",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.videocam), // Or Image.asset('assets/icons/stream.png')
+            label: "Stream",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_circle, size: 36, color: Colors.orange), // A prominent plus icon
+            label: "Create", // Label for the create button
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.storefront), // Or Image.asset('assets/icons/marketplace.png')
+            label: "Marketplace",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.speaker), // Or Image.asset('assets/icons/echo.png')
+            label: "Echo",
+          ),
         ],
+      ),
+    );
+  }
+
+  // Helper method for filter dropdowns
+  Widget _buildFilterDropdown(String hint, List<String> options) {
+    String? selectedValue; // You would manage the actual selected value with State
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.grey[200], // Light grey background for the dropdown
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: selectedValue, // This will be null initially
+          hint: Text(hint, style: const TextStyle(fontSize: 14)),
+          icon: const Icon(Icons.keyboard_arrow_down),
+          items: options.map((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value),
+            );
+          }).toList(),
+          onChanged: (String? newValue) {
+            setState(() {
+              selectedValue = newValue; // Update state if you want to reflect selection
+            });
+            // Handle filter change
+            print('Selected $hint: $newValue');
+          },
+          style: const TextStyle(color: Colors.black, fontSize: 14),
+          dropdownColor: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  // NFT Card Widget (modified)
+  Widget _nftCard(
+    BuildContext context, {
+    required String title,
+    required String creatorName,
+    required String price,
+    required String? image,
+    required String profileImage,
+    bool showBidButton = false, // Add this new parameter
+  }) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => NFTDetailScreen(
+              title: title,
+              creatorName: creatorName,
+              price: price,
+              image: image ?? '',
+              profileImage: profileImage,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 16),
+        width: 180,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.shade200, // Lighter shadow
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            )
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if ((image ?? '').isNotEmpty)
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                ),
+                child: Image.asset(
+                  image!,
+                  height: 120,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 120,
+                      width: double.infinity,
+                      color: Colors.grey[200],
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.broken_image, color: Colors.grey[600], size: 40),
+                            SizedBox(height: 8),
+                            Text("Image Error", style: TextStyle(color: Colors.grey[600])),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 10,
+                        backgroundImage: AssetImage(profileImage),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        creatorName,
+                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    price,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  if (showBidButton) ...[
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: MaterialButton(
+                        onPressed: () {
+                          print('Place a bid on $title');
+                        },
+                        color: Colors.orange,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: const Text(
+                          "Place a bid",
+                          style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
