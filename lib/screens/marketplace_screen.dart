@@ -76,7 +76,6 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
             ),
             const SizedBox(height: 24),
 
-            // --- Tab Bar ---
             TabBar(
               controller: _tabController,
               labelColor: Colors.black, // Active tab color
@@ -92,7 +91,6 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
             ),
             const SizedBox(height: 20), // Spacing after tabs
 
-            // --- Filter Row ---
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -102,8 +100,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
               ],
             ),
             const SizedBox(height: 20), // Spacing after filters
-
-            // --- Top Collection Section ---
+            
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -159,7 +156,6 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
             ),
             const SizedBox(height: 30), // Spacing between sections
 
-            // --- Best Sellers Section ---
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -253,7 +249,6 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
     );
   }
 
-  // Helper method for filter dropdowns
   Widget _buildFilterDropdown(String hint, List<String> options) {
     String? selectedValue; // You would manage the actual selected value with State
     return Container(
@@ -287,7 +282,6 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
     );
   }
 
-  // NFT Card Widget (modified)
   Widget _nftCard(
     BuildContext context, {
     required String title,
