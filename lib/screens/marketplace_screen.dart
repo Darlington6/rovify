@@ -87,7 +87,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
                 Tab(text: "Watchlist"),
               ],
             ),
-            const SizedBox(height: 20), // Spacing after tabs
+            const SizedBox(height: 20), 
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -97,7 +97,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
                 _buildFilterDropdown('Type', ['Auction', 'Fixed Price']),
               ],
             ),
-            const SizedBox(height: 20), // Spacing after filters
+            const SizedBox(height: 20), 
             
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
