@@ -26,14 +26,13 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Change background to white
+      backgroundColor: Colors.white, 
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0), // Adjust padding
+        padding: const EdgeInsets.symmetric(horizontal: 16.0), 
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 50), // Adjust for status bar height and top padding
-            // --- Custom Header (replaces AppBar) ---
+            const SizedBox(height: 50),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -69,7 +68,6 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
                 IconButton(
                   icon: const Icon(Icons.notifications_none, size: 28, color: Colors.black),
                   onPressed: () {
-                    // Handle notification bell press
                   },
                 ),
               ],
@@ -78,10 +76,10 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
 
             TabBar(
               controller: _tabController,
-              labelColor: Colors.black, // Active tab color
-              unselectedLabelColor: Colors.grey, // Inactive tab color
-              indicatorColor: Colors.black, // Indicator line color
-              indicatorSize: TabBarIndicatorSize.label, // Indicator matches label width
+              labelColor: Colors.black, 
+              unselectedLabelColor: Colors.grey, 
+              indicatorColor: Colors.black, 
+              indicatorSize: TabBarIndicatorSize.label, 
               labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               tabs: const [
                 Tab(text: "Trending"),
@@ -110,7 +108,6 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
                 ),
                 TextButton(
                   onPressed: () {
-                    // Handle "See all" for Top Collection
                   },
                   child: const Text(
                     "See all",
@@ -154,7 +151,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
                 ],
               ),
             ),
-            const SizedBox(height: 30), // Spacing between sections
+            const SizedBox(height: 30),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -165,7 +162,6 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
                 ),
                 TextButton(
                   onPressed: () {
-                    // Handle "See all" for Best Sellers
                   },
                   child: const Text(
                     "See all",
@@ -206,42 +202,39 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
                     profileImage: 'assets/images/profile.png',
                     showBidButton: false,
                   ),
-                  // Add more NFT cards as needed for Best Sellers
                 ],
               ),
             ),
-            const SizedBox(height: 20), // Padding before bottom nav if content is short
+            const SizedBox(height: 20),
           ],
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed, // Important for more than 3 items
-        selectedItemColor: Colors.orange, // Selected item color
-        unselectedItemColor: Colors.grey, // Unselected item color
-        currentIndex: 3, // Set to the index of 'Marketplace' if that's the current screen
+        type: BottomNavigationBarType.fixed, 
+        selectedItemColor: Colors.orange, 
+        unselectedItemColor: Colors.grey, 
+        currentIndex: 3,
         onTap: (index) {
-          // Handle navigation here based on index
-          // For example, using a PageView or Navigator
         },
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.explore), // Or Image.asset('assets/icons/explore.png')
+            icon: Icon(Icons.explore),
             label: "Explore",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.videocam), // Or Image.asset('assets/icons/stream.png')
+            icon: Icon(Icons.videocam), 
             label: "Stream",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle, size: 36, color: Colors.orange), // A prominent plus icon
-            label: "Create", // Label for the create button
+            icon: Icon(Icons.add_circle, size: 36, color: Colors.orange), 
+            label: "Create", 
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.storefront), // Or Image.asset('assets/icons/marketplace.png')
+            icon: Icon(Icons.storefront), 
             label: "Marketplace",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.speaker), // Or Image.asset('assets/icons/echo.png')
+            icon: Icon(Icons.speaker),
             label: "Echo",
           ),
         ],
@@ -250,16 +243,16 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
   }
 
   Widget _buildFilterDropdown(String hint, List<String> options) {
-    String? selectedValue; // You would manage the actual selected value with State
+    String? selectedValue; 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.grey[200], // Light grey background for the dropdown
+        color: Colors.grey[200],
         borderRadius: BorderRadius.circular(8),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          value: selectedValue, // This will be null initially
+          value: selectedValue, 
           hint: Text(hint, style: const TextStyle(fontSize: 14)),
           icon: const Icon(Icons.keyboard_arrow_down),
           items: options.map((String value) {
@@ -270,9 +263,8 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
           }).toList(),
           onChanged: (String? newValue) {
             setState(() {
-              selectedValue = newValue; // Update state if you want to reflect selection
+              selectedValue = newValue; 
             });
-            // Handle filter change
             print('Selected $hint: $newValue');
           },
           style: const TextStyle(color: Colors.black, fontSize: 14),
@@ -289,7 +281,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
     required String price,
     required String? image,
     required String profileImage,
-    bool showBidButton = false, // Add this new parameter
+    bool showBidButton = false, 
   }) {
     return GestureDetector(
       onTap: () {
@@ -314,7 +306,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with SingleTicker
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.shade200, // Lighter shadow
+              color: Colors.grey.shade200, 
               blurRadius: 8,
               offset: const Offset(0, 4),
             )
