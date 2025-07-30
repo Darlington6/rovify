@@ -23,7 +23,7 @@ dependencies:
   route_definer: ^1.1.0
   image_picker: ^1.0.4 
   firebase_storage: ^12.4.9
-  
+
 
 dev_dependencies:
   flutter_test:
@@ -38,6 +38,8 @@ flutter:
     - assets/stack-images/
     - assets/icons/
     - assets/download.jpg
+    - assets/onboarding-images/
+
 
   fonts:
     - family: Onest
