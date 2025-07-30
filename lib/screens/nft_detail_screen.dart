@@ -49,7 +49,6 @@ class NFTDetailScreen extends StatelessWidget {
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () {
-                // Add bidding logic here
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
