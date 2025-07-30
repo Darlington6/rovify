@@ -8,7 +8,6 @@ class ImplicitAnimationScreen extends StatefulWidget {
 }
 
 class _ImplicitAnimationScreenState extends State<ImplicitAnimationScreen> {
-  // Variables to animate
   double _width = 100;
   double _height = 100;
   Color _color = Colors.blue;
