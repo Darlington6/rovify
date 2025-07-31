@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rovify/presentation/pages/explore/widgets/category_tabs.dart';
 import 'package:rovify/presentation/pages/explore/widgets/filter_chip_row.dart';
 import 'package:rovify/presentation/pages/explore/widgets/search_bar.dart';
@@ -13,7 +14,7 @@ class EventListWithSearch extends StatefulWidget {
 
 class _EventListWithSearchState extends State<EventListWithSearch> {
   String _searchQuery = '';
-  String _selectedCategory = 'popular'; // <- Match category value, not label
+  String _selectedCategory = 'popular';
 
   void _handleSearchChanged(String query) {
     setState(() {
@@ -39,23 +40,16 @@ class _EventListWithSearchState extends State<EventListWithSearch> {
       children: [
         Column(
           children: [
-            // Search Bar
             SearchBarFeature(
               onSearchChanged: _handleSearchChanged,
               onClearSearch: _clearSearch,
               searchQuery: _searchQuery,
             ),
-
-            // Category Tabs
             CategoryTabs(
               selectedCategory: _selectedCategory,
               onCategorySelected: _handleCategorySelected,
             ),
-
-            // Filter Chips
             const FilterChipRow(),
-
-            // "Upcoming Events" title
             const Padding(
               padding: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 4.0),
               child: Align(
@@ -71,8 +65,6 @@ class _EventListWithSearchState extends State<EventListWithSearch> {
                 ),
               ),
             ),
-
-            // Event List with all filters
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -84,15 +76,11 @@ class _EventListWithSearchState extends State<EventListWithSearch> {
             ),
           ],
         ),
-
-        // Floating Nearby Button
         Positioned(
           bottom: 24,
           left: 0,
           right: 0,
-          child: Center(
-            child: _FloatingNearbyButton(),
-          ),
+          child: Center(child: _FloatingNearbyButton()),
         ),
       ],
     );
@@ -117,7 +105,7 @@ class _FloatingNearbyButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -145,6 +133,6 @@ class _FloatingNearbyButton extends StatelessWidget {
   }
 
   void _showNearbyEvents(BuildContext context) {
-    // TODO: Implement nearby events functionality
+    context.push('/map');
   }
 }

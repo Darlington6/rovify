@@ -7,12 +7,12 @@ import '../screens/onboarding/onboarding_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../pages/explore/explore_page.dart';
 import '../pages/echo/echo_screen.dart';
+import '../pages/map/map_screen.dart';
 import '../pages/explore/widgets/creator_dashboard screen.dart';
 import '../pages/event_form_screen.dart';
 import '../pages/explore/widgets/become_creator.dart';
 import '../pages/explore/widgets/profile_update.dart';
 
-/// Handles all app navigation routes using GoRouter.
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/',
@@ -41,6 +41,12 @@ class AppRouter {
         path: '/echo',
         name: 'echo',
         builder: (context, state) => const EchoScreen(),
+      ),
+      // Add the map route
+      GoRoute(
+        path: '/map',
+        name: 'map',
+        builder: (context, state) => const MapScreen(),
       ),
       GoRoute(
         path: '/stream',
@@ -103,7 +109,7 @@ class AppRouter {
               message: 'Please sign in to update profile',
             );
           }
-          return const ProfileUpdatePage(); // Update if your widget needs userId
+          return const ProfileUpdatePage();
         },
       ),
     ],
