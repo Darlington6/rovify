@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "983943105394",
+    "project_id": "rovify-92239",
+    "storage_bucket": "rovify-92239.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:983943105394:android:e1c15bcba9fe4e66f6abeb",
+        "android_client_info": {
+          "package_name": "com.example.rovify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "983943105394-feh99ggqh4qqfn3it1740n94krb1muqv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzD20n_Plva_s28ADk0fcLrj1ZGFX444o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "983943105394-feh99ggqh4qqfn3it1740n94krb1muqv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "983943105394-6ub6rk9ps901odeafno1ip5se9nk59bi.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.rovify"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
