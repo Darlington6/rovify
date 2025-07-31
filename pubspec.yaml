@@ -1,6 +1,6 @@
 name: rovify
 description: "A new Flutter project."
-publish_to: 'none' # Remove for public packages
+publish_to: "none" # Remove for public packages
 
 version: 1.0.0+1
 
@@ -15,24 +15,24 @@ dependencies:
   flutter_bloc: ^9.1.1
   equatable: ^2.0.7
   url_launcher: ^6.3.2
-  firebase_auth: ^5.6.2
-  firebase_core: ^3.15.1
-  cloud_firestore: ^5.6.11
-  google_sign_in: ^6.1.5
-  intl: ^0.17.0
+  firebase_auth: ^6.0.0
+  firebase_core: ^4.0.0
+  cloud_firestore: ^6.0.0
+  google_sign_in: ^6.2.1
+  intl: ^0.20.2
   route_definer: ^1.1.0
-  image_picker: ^1.0.4 
-  firebase_storage: ^12.4.9
-  
+  image_picker: ^1.0.4
+  firebase_storage: ^13.0.0
+  bloc: ^9.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true
-  
+
   assets:
     - assets/splash-images/
     - assets/stack-images/
@@ -42,12 +42,9 @@ flutter:
   fonts:
     - family: Onest
       fonts:
-        
-       
         - asset: assets/fonts/Onest-Regular.ttf
           weight: 400
         - asset: assets/fonts/Onest-Medium.ttf
           weight: 500
         - asset: assets/fonts/Onest-Bold.ttf
           weight: 700
-       

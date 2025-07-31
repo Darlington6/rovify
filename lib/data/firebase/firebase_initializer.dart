@@ -3,7 +3,8 @@ import 'package:rovify/firebase_options.dart';
 
 class FirebaseInitializer {
   static Future<void> initialize() async {
-    await Firebase.initializeApp();
-    DefaultFirebaseOptions.currentPlatform;
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
   }
 }
