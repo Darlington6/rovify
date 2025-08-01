@@ -46,7 +46,7 @@ app.*.map.json
 /android/app/release
 
 # Custom folders to exclude for now. Will be pushed to GitHub later.
-/lib
+# /lib
 /assets
 
 
