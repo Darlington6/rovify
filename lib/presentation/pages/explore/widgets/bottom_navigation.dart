@@ -1,33 +1,40 @@
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rovify/presentation/pages/explore/explore_page.dart';
 import 'package:rovify/presentation/pages/event_form_screen.dart';
 
 class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({super.key});
+  final int currentIndex;
+
+  const BottomNavBar({super.key, this.currentIndex = 0});
 
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.currentIndex;
+  }
 
   void _onItemTapped(int index) async {
     setState(() {
       _selectedIndex = index;
     });
 
-    if (index == 2) { // Create button
+    if (index == 2) {
+      // Create button
       final user = _auth.currentUser;
       if (user != null) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EventFormScreen(userId: user.uid),
-          ),
-        );
+        context.push('/addEvent');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please sign in to create events')),
@@ -38,19 +45,16 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
     switch (index) {
       case 0:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const ExplorePage()),
-        );
+        context.go('/explore');
         break;
       case 1:
-        // Handle Stream navigation
+        context.go('/stream');
         break;
       case 3:
-        // Handle Marketplace navigation
+        context.go('/marketplace');
         break;
       case 4:
-        // Handle Echo navigation
+        context.go('/echo');
         break;
     }
   }
@@ -86,11 +90,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           label: 'Stream',
         ),
         BottomNavigationBarItem(
-          icon: const Icon(
-            Icons.add_circle,
-            color: Colors.orange,
-            size: 32,
-          ),
+          icon: const Icon(Icons.add_circle, color: Colors.orange, size: 32),
           label: 'Create',
         ),
         BottomNavigationBarItem(

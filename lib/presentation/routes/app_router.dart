@@ -6,12 +6,13 @@ import '../screens/splash/splash_screen.dart';
 import '../screens/onboarding/onboarding_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../pages/explore/explore_page.dart';
+import '../pages/echo/echo_screen.dart';
+import '../pages/map/map_screen.dart';
 import '../pages/explore/widgets/creator_dashboard screen.dart';
 import '../pages/event_form_screen.dart';
 import '../pages/explore/widgets/become_creator.dart';
 import '../pages/explore/widgets/profile_update.dart';
 
-/// Handles all app navigation routes using GoRouter.
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/',
@@ -37,12 +38,38 @@ class AppRouter {
         builder: (context, state) => const ExplorePage(),
       ),
       GoRoute(
+        path: '/echo',
+        name: 'echo',
+        builder: (context, state) => const EchoScreen(),
+      ),
+      // Add the map route
+      GoRoute(
+        path: '/map',
+        name: 'map',
+        builder: (context, state) => const MapScreen(),
+      ),
+      GoRoute(
+        path: '/stream',
+        name: 'stream',
+        builder: (context, state) =>
+            _placeholderScreen(context, 'Stream', 'Coming Soon!'),
+      ),
+      GoRoute(
+        path: '/marketplace',
+        name: 'marketplace',
+        builder: (context, state) =>
+            _placeholderScreen(context, 'Marketplace', 'Coming Soon!'),
+      ),
+      GoRoute(
         path: '/addEvent',
         name: 'addEvent',
         builder: (context, state) {
           final userId = FirebaseAuth.instance.currentUser?.uid;
           if (userId == null) {
-            return _unauthenticatedScreen(context, message: 'Please sign in to create events');
+            return _unauthenticatedScreen(
+              context,
+              message: 'Please sign in to create events',
+            );
           }
           return EventFormScreen(userId: userId);
         },
@@ -51,7 +78,8 @@ class AppRouter {
         path: '/creatorDashboard',
         name: 'creatorDashboard',
         builder: (context, state) {
-          final userId = state.extra as String? ?? FirebaseAuth.instance.currentUser?.uid;
+          final userId =
+              state.extra as String? ?? FirebaseAuth.instance.currentUser?.uid;
           if (userId == null) {
             return _unauthenticatedScreen(context);
           }
@@ -62,7 +90,8 @@ class AppRouter {
         path: '/becomeCreator',
         name: 'becomeCreator',
         builder: (context, state) {
-          final userId = state.extra as String? ?? FirebaseAuth.instance.currentUser?.uid;
+          final userId =
+              state.extra as String? ?? FirebaseAuth.instance.currentUser?.uid;
           if (userId == null) {
             return _unauthenticatedScreen(context);
           }
@@ -75,15 +104,21 @@ class AppRouter {
         builder: (context, state) {
           final userId = FirebaseAuth.instance.currentUser?.uid;
           if (userId == null) {
-            return _unauthenticatedScreen(context, message: 'Please sign in to update profile');
+            return _unauthenticatedScreen(
+              context,
+              message: 'Please sign in to update profile',
+            );
           }
-          return const ProfileUpdatePage(); // Update if your widget needs userId
+          return const ProfileUpdatePage();
         },
       ),
     ],
   );
 
-  static Widget _unauthenticatedScreen(BuildContext context, {String message = 'User authentication required'}) {
+  static Widget _unauthenticatedScreen(
+    BuildContext context, {
+    String message = 'User authentication required',
+  }) {
     return Scaffold(
       body: Center(
         child: Column(
@@ -93,6 +128,52 @@ class AppRouter {
             TextButton(
               onPressed: () => context.go('/'),
               child: const Text('Go to Login'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static Widget _placeholderScreen(
+    BuildContext context,
+    String title,
+    String message,
+  ) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.construction, size: 64, color: Colors.grey[400]),
+            SizedBox(height: 16),
+            Text(
+              message,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[600],
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              '$title feature is under development',
+              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+            ),
+            SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => context.go('/explore'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.white,
+              ),
+              child: Text('Back to Explore'),
             ),
           ],
         ),
