@@ -251,6 +251,20 @@ flutter test --coverage
   </tr>
 </table>
 
+### Authentication Screens
+<table>
+  <tr>
+    <td><img src="./screenshots/signup.jpeg" width="280" alt="Signup Screen"/></td>
+    <td><img src="./screenshots/login.jpeg" width="280" alt="Login Screen"/></td>
+    <td><img src="./screenshots/forgotpassword.jpeg" width="280" alt="Forgot Password Screen"/></td>
+  </tr>
+  <tr>
+    <td align="center">Signup Screen</td>
+    <td align="center">Login Screen</td>
+    <td align="center">Forgot Password Screen</td>
+  </tr>
+</table>
+
 ## Configuration
 
 ### Firebase Setup
