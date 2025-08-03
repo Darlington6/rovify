@@ -237,6 +237,19 @@ flutter test --coverage
 
 ## App Screenshots
 
+### Animated Splash Screen
+<table>
+  <tr>
+    <td><img src="./screenshots/splash1.jpeg" width="280" alt="Splash Screen 1"/></td>
+    <td><img src="./screenshots/splash2.jpeg" width="280" alt="Splash Screen 2"/></td>
+    <td><img src="./screenshots/splash3.jpeg" width="280" alt="Splash Screen 3"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>First Splash</b><br/>Welcome splash screen</td>
+    <td align="center"><b>Second Splash</b><br/>Second splash screen</td>
+    <td align="center"><b>Third Splash</b><br/>Third splash screen</td>
+  </tr>
+</table>
 
 ## Configuration
 
