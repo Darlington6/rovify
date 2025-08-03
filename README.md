@@ -323,12 +323,12 @@ flutter test --coverage
 <table>
   <tr>
     <td><img src="./screenshots/create-event.jpeg" width="280" alt="Create New Event"/></td>
-    <td><img src="./screenshots/dashboard.jpeg" width="280" alt="Dahsboard"/></td>
+    <td><img src="./screenshots/dashboard.jpeg" width="280" alt="Event Overview"/></td>
     <td><img src="./screenshots/my-events.jpeg" width="280" alt="My Events"/></td>
   </tr>
   <tr>
     <td align="center">Create New Event</td>
-    <td align="center">Dahsboard</td>
+    <td align="center">Event Overview</td>
     <td align="center">My Events</td>
   </tr>
 </table>
@@ -343,6 +343,46 @@ flutter test --coverage
     <td align="center">Event Details</td>
     <td align="center">Edit Event</td>
     <td align="center">Scan Tickets</td>
+  </tr>
+</table>
+
+### User Event Booking and Host Check-in Processes
+<table>
+  <tr>
+    <td><img src="./screenshots/book-event.jpeg" width="280" alt="Book Event"/></td>
+    <td><img src="./screenshots/ticket-confirmation.jpeg" width="280" alt="Confirmation Screen"/></td>
+    <td><img src="./screenshots/notifications.jpeg" width="280" alt="Notifications"/></td>
+  </tr>
+  <tr>
+    <td align="center">Book Event</td>
+    <td align="center">Confirmation Screen</td>
+    <td align="center">Notifications</td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td><img src="./screenshots/my-tickets.jpeg" width="280" alt="My Tickets"/></td>
+    <td><img src="./screenshots/ticket-details-unchecked.jpeg" width="280" alt="Ticket Details - Unchecked"/></td>
+    <td><img src="./screenshots/scan-ticket.jpeg" width="280" alt="Scan Ticket"/></td>
+  </tr>
+  <tr>
+    <td align="center">My Tickets</td>
+    <td align="center">Ticket Details - Unchecked</td>
+    <td align="center">Host Scans Ticket</td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td><img src="./screenshots/scan-ticket-success.jpeg" width="280" alt="Scan Ticket Success"/></td>
+    <td><img src="./screenshots/ticket-details-checked1.jpeg" width="280" alt="Ticket Checked In"/></td>
+    <td><img src="./screenshots/ticket-details-checked2.jpeg" width="280" alt="Checked in Ticket Details"/></td>
+  </tr>
+  <tr>
+    <td align="center">Scan Ticket Success</td>
+    <td align="center">Ticket Checked In</td>
+    <td align="center">Checked in Ticket Details</td>
   </tr>
 </table>
 
