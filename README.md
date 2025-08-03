@@ -1,6 +1,6 @@
 # Rovify
 
-A modern Flutter application for discovering and creating events, with NFT marketplace integration and social features.
+A modern Flutter application for discovering and creating events, with NFT marketplace integration and social features. Rovify uses Google Firestore NoSQL database to power NFT-ticketed events with real-time interactions and community governance.
 
 ## Overview
 
@@ -19,39 +19,48 @@ rovify/
 ├── lib/
 │   ├── core/                    # Core utilities and constants
 │   │   ├── constants/           # App constants and configurations
-│   │   └── theme/              # App theming and styling
-│   ├── data/                   # Data layer
-│   │   ├── datasources/        # Remote and local data sources
-│   │   ├── firebase/           # Firebase configuration
-│   │   └── repositories/       # Repository implementations
-│   ├── domain/                 # Business logic layer
-│   │   ├── entities/           # Domain entities
-│   │   ├── repositories/       # Repository interfaces
-│   │   └── usecases/          # Business use cases
-│   ├── presentation/           # UI layer
-│   │   ├── blocs/             # BLoC state management
-│   │   │   ├── auth/          # Authentication BLoC
-│   │   │   ├── event/         # Event management BLoC
-│   │   │   ├── nft/           # NFT marketplace BLoC
-│   │   │   ├── onboarding/    # Onboarding flow BLoC
-│   │   │   └── splash/        # Splash screen BLoC
-│   │   ├── common/            # Reusable UI components
-│   │   ├── routes/            # App routing configuration
-│   │   └── screens/           # App screens
-│   │       ├── auth/          # Authentication screens
-│   │       ├── home/          # Main app screens
-│   │       ├── onboarding/    # Onboarding flow
-│   │       └── splash/        # Splash screen
-│   └── main.dart              # App entry point
-├── assets/                    # App assets
-│   ├── icons/                 # App icons
-│   ├── onboarding-images/     # Onboarding assets
-│   ├── marketplace-images/    # Marketplace assets
-│   ├── splash-images/         # Splash screen assets
-│   ├── stack-images/          # Stack navigation assets
-│   └── tab-images/           # Tab navigation assets
-├── test/                     # Unit and widget tests
-└── lib/test/                 # Additional widget tests
+│   │   └── theme/               # App theming and styling
+│   │   └── utils/               # For simple validations
+│   │   └── widgets/             # Custom button and responsive builder
+│   ├── data/                    # Data layer
+│   │   ├── datasources/         # Remote and local data sources
+│   │   ├── firebase/            # Firebase configuration
+│   │   ├── models/              # Data models
+│   │   └── repositories/        # Repository implementations
+│   ├── domain/                  # Business logic layer
+│   │   ├── entities/            # Domain entities
+│   │   ├── repositories/        # Repository interfaces
+│   │   └── usecases/            # Business use cases
+│   ├── presentation/            # UI layer
+│   │   ├── blocs/               # BLoC state management
+│   │   │   ├── auth/            # Authentication BLoC
+│   │   │   ├── event/           # Event management BLoC
+│   │   │   ├── nft/             # NFT marketplace BLoC   
+│   │   │   └── onboarding/      # Onboarding flow BLoC
+│   │   ├── common/              # Reusable UI components
+│   │   ├── routes/              # App routing configuration
+│   │   └── screens/             # App screens
+│   │       ├── auth/            # Authentication screens
+│   │       ├── home/            # Main app screens
+|   |       |       ├── pages/           # Pages screens
+|   |       |       ├── tabs/            # Tabs for Navigation
+|   |       |       └── widgets/         # Different implementations for various tabs
+|   |       |                  ├── create           # Create event implementation
+|   |       |                  ├── creator          # Creator implementation
+|   |       |                  ├── explore          # Explore implementation
+|   |       |                  └── stream           # Stream implementation
+│   │       ├── onboarding/      # Onboarding flow
+│   │       └── splash/          # Splash screen
+│   └── main.dart                # App entry point
+├── assets/                      # App assets
+│   ├── icons/                   # App icons
+│   ├── onboarding-images/       # Onboarding assets
+│   ├── marketplace-images/      # Marketplace assets
+│   ├── splash-images/           # Splash screen assets
+│   ├── stack-images/            # Stack navigation assets
+│   └── tab-images/              # Tab navigation assets
+└── test/                        # Unit and widget tests
+
 ```
 
 ## Features
@@ -96,6 +105,42 @@ rovify/
 - **shared_preferences**: Local data persistence
 - **url_launcher**: External link handling
 
+
+## Database Architecture
+
+### **users**
+User profiles with wallet integration
+- `displayName`, `email`, `avatarUrl`, `interests[]`, `walletAddress`, `isCreator`, `joinedAt`
+
+### **events** 
+Event metadata for virtual/in-person experiences
+- `title`, `hostID`, `type`, `location`, `category`, `datetime`, `description`, `status`, `thumbnailUrl`, `ticketType`, `createdAt`
+
+### **tickets**
+NFT ticket management with blockchain data
+- `eventID`, `userID`, `walletAddress`, `qrCodeUrl`, `metadata{}`, `checkedIn`, `issuedAt`
+
+### **creators**
+Extended creator profiles and social links
+- `bio`, `socials{}`, `eventsHosted[]`, `walletConnected`
+
+### **notifications** *(New)*
+User notifications and platform communications
+- `userID`, `type`, `title`, `message`, `read`, `relatedEventID`, `createdAt`
+
+## Planned Collections
+
+- **eventRooms**: Real-time chat, polls, and participant tracking
+- **memoryReels**: AI-generated post-event video highlights 
+- **daoProposals**: Community governance and funding decisions
+- **liveStreams**: Streaming data and viewer engagement (subcollection under events)
+
+## Key Features
+- **Blockchain Integration**: NFT tickets with IPFS metadata storage
+- **Real-time Sync**: Live event updates and notifications
+- **Scalable Design**: Document-based structure for horizontal scaling
+- **Security**: User-based permissions with wallet verification
+
 ## Prerequisites
 
 Before running this project, make sure you have:
@@ -110,7 +155,7 @@ Before running this project, make sure you have:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/Darlington6/rovify.git
+git clone https://github.com/yourusername/rovify.git
 cd rovify
 ```
 
@@ -179,7 +224,7 @@ flutter test
 ### Run Specific Test Files
 ```bash
 # Run widget tests
-flutter test lib/test/
+flutter test test/
 
 # Run specific test file
 flutter test test/widget_test.dart
@@ -192,9 +237,8 @@ flutter test --coverage
 
 ## App Screenshots
 
-*[Add screenshots of your app here]*
 
-## 🔧 Configuration
+## Configuration
 
 ### Firebase Setup
 1. Create a new Firebase project
@@ -217,14 +261,13 @@ The app requires location permissions for event discovery:
 5. Open a Pull Request
 
 
-
 If you encounter any issues:
 
 1. Check the [Issues](https://github.com/Darlington6/rovify/issues) page
 2. Create a new issue with detailed information
 3. Include device information, Flutter version, and error logs
 
-## 🔗 Links
+## Links
 
 - **Flutter Documentation**: https://docs.flutter.dev/
 - **Firebase Documentation**: https://firebase.google.com/docs
@@ -232,12 +275,12 @@ If you encounter any issues:
 
 ## Project Status
 
-- Authentication System
-- Event Management
-- Location Services
-- NFT Marketplace
-- User Profiles
-- Push Notifications
-- Advanced Search (Planned)
+- ✅ Authentication System
+- ✅ Event Management
+- ✅ Location Services
+- ✅ NFT Marketplace
+- ✅ User Profiles
+- ✅ Push Notifications
+- 🔄 Advanced Search (Planned)
 
 ---
