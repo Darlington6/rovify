@@ -1,210 +1,258 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:rovify/domain/usecases/sign_in_user.dart';
 import 'package:rovify/domain/usecases/sign_up_user.dart';
 import 'package:rovify/domain/entities/user.dart' as domain;
-import 'package:rovify/presentation/blocs/auth/auth_event.dart';
-import 'package:rovify/presentation/blocs/auth/auth_state.dart';
+import 'auth_event.dart';
+import 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final SignUpUser _signUpUser;
-  final SignInUser _signInUser;
-  final firebase.FirebaseAuth _firebaseAuth;
-  final FirebaseFirestore _firestore;
+  final SignUpUser signUpUser;
+  final SignInUser signInUser;
+  final firebase.FirebaseAuth firebaseAuth;
 
   AuthBloc({
-    required SignUpUser signUpUser,
-    required SignInUser signInUser,
-    required firebase.FirebaseAuth firebaseAuth,
-    FirebaseFirestore? firestore,
-  }) : _signUpUser = signUpUser,
-       _signInUser = signInUser,
-       _firebaseAuth = firebaseAuth,
-       _firestore = firestore ?? FirebaseFirestore.instance,
-       super(AuthInitial()) {
-    on<SignUpRequested>(_onSignUpRequested);
-    on<SignInRequested>(_onSignInRequested);
-    on<SignOutRequested>(_onSignOutRequested);
-    on<GoogleSignInRequested>(_onGoogleSignInRequested);
-  }
+    required this.signUpUser,
+    required this.signInUser,
+    required this.firebaseAuth,
+  }) : super(AuthInitial()) {
+    // Email/Password Sign Up
+    on<SignUpRequested>((event, emit) async {
+      emit(AuthLoading());
 
-  Future<void> _onSignUpRequested(
-    SignUpRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(AuthLoading());
-
-    try {
       final email = event.email.trim();
       final password = event.password.trim();
 
-      if (!_isValidEmail(email)) {
-        emit(AuthError('Please enter a valid email address'));
+      // Email Validation
+      if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(email)) {
+        emit(AuthError("Please enter a valid email."));
         return;
       }
 
-      if (!_isValidPassword(password)) {
-        emit(
-          AuthError(
-            'Password must be 8+ chars with uppercase, lowercase, number and special char',
-          ),
+      // Password Validation
+      if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$')
+          .hasMatch(password)) {
+        emit(AuthError(
+            "Password must be at least 8 characters and include uppercase, lowercase, number, and special character."));
+        return;
+      }
+
+      try {
+        // Create user with Firebase
+        final credential = await firebaseAuth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
         );
-        return;
+
+        final firebaseUser = credential.user;
+
+        if (firebaseUser == null) {
+          emit(AuthError("Failed to create user. Try again later."));
+          return;
+        }
+
+        // Update display name
+        await firebaseUser.reload();
+        final updatedUser = firebaseAuth.currentUser;
+
+        // Create domain user
+        final newUser = domain.User(
+          id: updatedUser!.uid,
+          email: updatedUser.email ?? '',
+          displayName: updatedUser.displayName ?? '',
+          avatarUrl: updatedUser.photoURL ?? '',
+          joinedAt: updatedUser.metadata.creationTime ?? DateTime.now(),
+        );
+
+        // Save to Firestore
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(updatedUser.uid)
+            .set(newUser.toMap());
+
+        emit(Authenticated(newUser));
+      } on firebase.FirebaseAuthException catch (e) {
+        if (e.code == 'email-already-in-use') {
+          emit(AuthError("This email is already registered. Please log in!"));
+        } else if (e.code == 'weak-password') {
+          emit(AuthError("Your password is too weak. Try again."));
+        } else if (e.code == 'invalid-email') {
+          emit(AuthError("Invalid email format."));
+        } else {
+          emit(AuthError("Sign up failed. ${_handleFirebaseError(e)}"));
+        }
+      } catch (e) {
+        emit(AuthError("An unexpected error occurred. Please try again."));
       }
+    });
 
-      final user = await _signUpUser(email: email, password: password);
-      emit(Authenticated(user));
-    } catch (e) {
-      emit(AuthError(_handleAuthError(e)));
-    }
-  }
+    // Email/Password Sign In
+    on<SignInRequested>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        await firebaseAuth.signInWithEmailAndPassword(
+          email: event.email,
+          password: event.password,
+        );
 
-  Future<void> _onSignInRequested(
-    SignInRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(AuthLoading());
+        final firebaseUser = firebaseAuth.currentUser;
 
-    try {
-      final user = await _signInUser(
-        email: event.email,
-        password: event.password,
-      );
-      emit(Authenticated(user));
-    } catch (e) {
-      emit(AuthError(_handleAuthError(e)));
-    }
-  }
+        if (firebaseUser == null) {
+          emit(AuthError("Failed to retrieve user information."));
+          return;
+        }
 
-  Future<void> _onSignOutRequested(
-    SignOutRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(AuthLoading());
-    try {
-      await _firebaseAuth.signOut();
-      emit(UnAuthenticated());
-    } catch (e) {
-      emit(AuthError('Failed to sign out. Please try again.'));
-    }
-  }
+        final user = domain.User(
+          id: firebaseUser.uid,
+          email: firebaseUser.email ?? '',
+          displayName: firebaseUser.displayName ?? '',
+          avatarUrl: firebaseUser.photoURL ?? '',
+          joinedAt: firebaseUser.metadata.creationTime ?? DateTime.now(),
+        );
 
-  Future<void> _onGoogleSignInRequested(
-    GoogleSignInRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(AuthLoading());
+        emit(Authenticated(user));
+      } on firebase.FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found') {
+          emit(AuthError('No account found for that email.'));
+        } else if (e.code == 'wrong-password') {
+          emit(AuthError('Incorrect password. Please try again.'));
+        } else if (e.code == 'invalid-email') {
+          emit(AuthError('The email address is badly formatted.'));
+        } else if (e.code == 'too-many-requests') {
+          emit(AuthError('Too many attempts. Try again later.'));
+        } else {
+          emit(AuthError('Sign in failed. Please try again.'));
+        }
+      } catch (_) {
+        emit(AuthError('Unexpected error occurred. Please try again.'));
+      }
+    });
 
-    try {
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        scopes: ['email', 'profile'],
-      );
-
-      await googleSignIn.signOut();
-
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-
-      if (googleUser == null) {
+    // Sign Out
+    on<SignOutRequested>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        await firebaseAuth.signOut();
         emit(UnAuthenticated());
-        return;
+      } catch (_) {
+        emit(AuthError("Sign out failed. Please try again."));
       }
+    });
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+    // Google Sign In (with account picker)
+    on<GoogleSignInRequested>((event, emit) async {
+      emit(AuthLoading());
 
-      final firebase.OAuthCredential credential =
-          firebase.GoogleAuthProvider.credential(
-            accessToken: googleAuth.accessToken,
-            idToken: googleAuth.idToken,
+      try {
+        final GoogleSignIn googleSignIn = GoogleSignIn(
+          scopes: ['email', 'profile'],
+        );
+
+        // Let user select an account
+        await googleSignIn.signOut();
+
+        final googleUser = await googleSignIn.signIn();
+
+        if (googleUser == null) {
+          emit(AuthError("Google Sign-In was cancelled."));
+          return;
+        }
+
+        final googleAuth = await googleUser.authentication;
+
+        final credential = firebase.GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        final result = await firebaseAuth.signInWithCredential(credential);
+        final firebaseUser = result.user;
+
+        if (firebaseUser == null) {
+          emit(AuthError("Google Sign-In failed."));
+          return;
+        }
+
+        // Check if user already exists in Firestore
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(firebaseUser.uid)
+            .get();
+
+        if (!userDoc.exists) {
+          final newUser = domain.User(
+            id: firebaseUser.uid,
+            email: firebaseUser.email ?? '',
+            displayName: firebaseUser.displayName ?? '',
+            avatarUrl: firebaseUser.photoURL,
+            joinedAt: DateTime.now(),
           );
 
-      final firebase.UserCredential userCredential = await _firebaseAuth
-          .signInWithCredential(credential);
+          // Save user to Firestore
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(firebaseUser.uid)
+              .set(newUser.toMap());
+        }
 
-      final firebase.User? firebaseUser = userCredential.user;
-
-      if (firebaseUser == null) {
-        throw firebase.FirebaseAuthException(
-          code: 'google-sign-in-failed',
-          message: 'Failed to authenticate with Google',
+        final user = domain.User(
+          id: firebaseUser.uid,
+          email: firebaseUser.email ?? '',
+          displayName: firebaseUser.displayName ?? '',
+          avatarUrl: firebaseUser.photoURL ?? '',
+          joinedAt: DateTime.now(),
         );
+
+        emit(Authenticated(user));
+      } catch (e) {
+        emit(AuthError("Google Sign-In failed. ${_handleFirebaseError(e)}"));
       }
+    });
 
-      final domain.User user = await _getOrCreateUser(firebaseUser);
-      emit(Authenticated(user));
-    } on firebase.FirebaseAuthException catch (e) {
-      emit(AuthError(_handleAuthError(e)));
-    } catch (e) {
-      emit(AuthError('Google sign-in failed: ${e.toString()}'));
-    }
+    // Apple Sign In (iOS/macOS only)
+    on<AppleSignInRequested>((event, emit) async {
+      emit(AuthLoading());
+
+      try {
+        await Future.delayed(const Duration(milliseconds: 300));
+        emit(AuthError("Apple Sign-In is not yet implemented. Please continue with Google or Email/Password."));
+      } catch (e) {
+        emit(AuthError("Apple Sign-In failed. ${_handleFirebaseError(e)}"));
+      }
+    });
+
+    // Twitter/X Sign In (placeholder)
+    on<XSignInRequested>((event, emit) async {
+      emit(AuthLoading());
+
+      try {
+        await Future.delayed(const Duration(milliseconds: 300), () {
+          emit(AuthError("X (Twitter) Sign-In is not yet implemented. Please continue with Google or Email/Password."));
+        });
+      } catch (e) {
+        emit(AuthError("X Sign-In failed. ${_handleFirebaseError(e)}"));
+      }
+    });
   }
 
-  Future<domain.User> _getOrCreateUser(firebase.User firebaseUser) async {
-    final userDoc = await _firestore
-        .collection('users')
-        .doc(firebaseUser.uid)
-        .get();
-
-    if (!userDoc.exists) {
-      final newUser = domain.User(
-        id: firebaseUser.uid,
-        email: firebaseUser.email ?? '',
-        displayName:
-            firebaseUser.displayName ??
-            firebaseUser.email?.split('@').first ??
-            'User',
-        avatarUrl: firebaseUser.photoURL,
-        joinedAt: DateTime.now(),
-      );
-
-      await _firestore
-          .collection('users')
-          .doc(firebaseUser.uid)
-          .set(newUser.toMap());
-      return newUser;
-    }
-
-    return domain.User.fromMap(firebaseUser.uid, userDoc.data()!);
-  }
-
-  bool _isValidEmail(String email) {
-    return RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(email);
-  }
-
-  bool _isValidPassword(String password) {
-    return RegExp(
-      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$',
-    ).hasMatch(password);
-  }
-
-  String _handleAuthError(Object error) {
+  /// Converts Firebase error messages to user-friendly format
+  String _handleFirebaseError(Object error) {
     final message = error.toString().toLowerCase();
 
-    if (message.contains('email-already-in-use')) {
-      return 'This email is already registered.';
-    } else if (message.contains('wrong-password') ||
-        message.contains('invalid-credential')) {
-      return 'Incorrect email or password.';
-    } else if (message.contains('user-not-found')) {
-      return 'No account found with this email.';
-    } else if (message.contains('user-disabled')) {
-      return 'This account has been disabled.';
-    } else if (message.contains('network-request-failed')) {
-      return 'Network error. Please check your internet connection.';
-    } else if (message.contains('too-many-requests')) {
-      return 'Too many attempts. Please try again later.';
-    } else if (message.contains('operation-not-allowed')) {
-      return 'This sign-in method is not enabled.';
-    } else if (message.contains('invalid-email')) {
-      return 'Please enter a valid email address.';
-    } else if (message.contains('account-exists-with-different-credential')) {
-      return 'An account already exists with this email but different sign-in method.';
-    } else if (message.contains('cancelled') || message.contains('canceled')) {
-      return 'Sign-in cancelled.';
+    if (message.contains("email-already-in-use")) {
+      return "This email is already registered. Please log in!";
+    } else if (message.contains("wrong-password")) {
+      return "Incorrect password. Please try again.";
+    } else if (message.contains("user-not-found")) {
+      return "No account found with this email.";
+    } else if (message.contains("network-request-failed")) {
+      return "Network error. Please check your internet connection.";
+    } else if (message.contains("too-many-requests")) {
+      return "Too many attempts. Please try again later.";
     }
 
-    return 'Authentication failed. Please try again.';
+    return "Something went wrong. Please try again.";
   }
 }

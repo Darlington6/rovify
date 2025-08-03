@@ -45,5 +45,14 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs location access to show your current location.</string>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to photo library to select event thumbnails</string>
+
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs camera access to scan QR codes for ticket check-in</string>
 </dict>
 </plist>

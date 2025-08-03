@@ -2,13 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rovify/core/widgets/custom_button.dart';
 import 'package:rovify/presentation/blocs/auth/auth_bloc.dart';
 import 'package:rovify/presentation/blocs/auth/auth_event.dart';
+import 'package:rovify/presentation/blocs/auth/auth_state.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'login_bottom_sheet.dart';
-import 'package:rovify/presentation/blocs/auth/auth_state.dart';
-
 
 class SignUpBottomSheet extends StatefulWidget {
   const SignUpBottomSheet({super.key});
@@ -19,7 +19,6 @@ class SignUpBottomSheet extends StatefulWidget {
 
 class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
   final _formKey = GlobalKey<FormState>();
-  bool _agreeToTerms = false;
   bool _obscurePassword = true;
 
   final TextEditingController _emailController = TextEditingController();
@@ -28,6 +27,28 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
   final ScrollController _scrollController = ScrollController();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
+
+  final _emailKey = GlobalKey();    // Used to scroll to email field
+  final _passwordKey = GlobalKey(); // Used to scroll to password field
+
+  bool _agreeToTerms = false;
+
+  String? _emailError;
+  String? _passwordError;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Listen to focus changes and scroll into view if field is focused
+    _emailFocusNode.addListener(() {
+      if (_emailFocusNode.hasFocus) _scrollToField(_emailKey);
+    });
+
+    _passwordFocusNode.addListener(() {
+      if (_passwordFocusNode.hasFocus) _scrollToField(_passwordKey);
+    });
+  }
 
   @override
   void dispose() {
@@ -39,96 +60,88 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
     super.dispose();
   }
 
-  @override
-  void initState() {
-    super.initState();
-
-    _emailFocusNode.addListener(_scrollToField);
-    _passwordFocusNode.addListener(_scrollToField);
-  }
-
-  void _scrollToField() {
-    if (_emailFocusNode.hasFocus || _passwordFocusNode.hasFocus) {
-      // Delay to wait until keyboard is fully visible
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
+  // Scrolls to a specific field using its GlobalKey
+  void _scrollToField(GlobalKey key) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final context = key.currentContext;
+      if (context != null) {
+        Scrollable.ensureVisible(
+          context,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
         );
-      });
-    }
+      }
+    });
   }
 
+  // Toggles password visibility
   void _togglePasswordVisibility() {
     setState(() => _obscurePassword = !_obscurePassword);
   }
 
+  // Validates form and triggers signup if valid
   void _submitSignUp() {
-    if (_formKey.currentState!.validate()) {
-      if (!_agreeToTerms) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("You must agree to the terms and conditions to continue.")),
-        );
-        return;
-      }
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    bool isValid = true;
 
-      // Trigger Bloc Event
-      context.read<AuthBloc>().add(SignUpRequested(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-        acceptedTerms: _agreeToTerms,
-      )
+    // Email validation
+    if (email.isEmpty) {
+      setState(() => _emailError = "Email is required.");
+      isValid = false;
+    } else if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(email)) {
+      setState(() => _emailError = "Please enter a valid email address.");
+      isValid = false;
+    } else {
+      setState(() => _emailError = null);
+    }
+
+    // Password validation
+    if (password.isEmpty) {
+      setState(() => _passwordError = "Password is required.");
+      isValid = false;
+    } else if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$')
+        .hasMatch(password)) {
+      setState(() => _passwordError =
+          "Password must be ≥ 8 characters, include uppercase, lowercase, number, and special character.");
+      isValid = false;
+    } else {
+      setState(() => _passwordError = null);
+    }
+
+    // Terms agreement check
+    if (!_agreeToTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("You must agree to the terms and conditions to continue."),
+        ),
       );
+      return;
+    }
+
+    // Dispatch signup event
+    if (isValid) {
+      context.read<AuthBloc>().add(SignUpRequested(
+            email: email,
+            password: password,
+            acceptedTerms: _agreeToTerms,
+          ));
     }
   }
-  void showSignUpBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => const SignUpBottomSheet(),
-    );
-  }
-
-  // void showSignUpBottomSheet(BuildContext context) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     backgroundColor: Colors.transparent,
-  //     builder: (sheetContext) {
-  //   return BlocListener<AuthBloc, AuthState>(
-  //     listener: (context, state) {
-  //       if (state is AuthError) {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(
-  //             content: Text(state.message),
-  //             backgroundColor: Colors.amber, // Gentle color for information and guidance
-  //             // behavior: SnackBarBehavior.floating,
-  //           ),
-  //         );
-  //       } else if (state is Authenticated) {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           const SnackBar(
-  //             content: Text("Account created successfully!"),
-  //             backgroundColor: Colors.green,
-  //           ),
-  //         );
-  //         Navigator.of(context).pop(); // Close bottom sheet
-  //       }
-  //     },
-  //     child: const SignUpBottomSheet(),
-  //     );
-  //     },
-  //   );
-  // }
-
 
   @override
   Widget build(BuildContext context) {
-      return Container(
-        height: MediaQuery.of(context).size.height * 0.85, // Set height of bottom sheet
-        padding: const EdgeInsets.all(24),
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is Authenticated) {
+          Navigator.of(context).popUntil((route) => route.isFirst); // Remove bottom sheet
+          context.go('/onboarding'); // Then go to onboarding screen
+        }
+      },
+    
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.85,
+        padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
@@ -136,207 +149,196 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
         child: SafeArea(
           child: Stack(
             children: [
-                // Scrollable content below the close button
-                Padding(
-                  padding: const EdgeInsets.only(top: 48), // Leaves space for close button
-              child: GestureDetector(
-                onTap: () => FocusScope.of(context).unfocus(),
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom,
-                  ),
-                
+              // Scrollable content
+              Padding(
+                padding: const EdgeInsets.only(top: 48),
+                child: GestureDetector(
+                  onTap: () => FocusScope.of(context).unfocus(),
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    physics: const BouncingScrollPhysics(),
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                    ),
                     child: Form(
                       key: _formKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                
-                          // Title and subtitle
-                          Center(
-                            child: const Text(
+
+                          // Title
+                          const Center(
+                            child: Text(
                               "Welcome to Rovify",
-                              style: TextStyle(fontSize: 28, color: Color(0xFF000000), fontWeight: FontWeight.w700),
+                              style: TextStyle(
+                                fontSize: 28,
+                                color: Color(0xFF000000),
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 12),
+
+                          // Subtitle
                           const Text(
                             "Create your account to start discovering amazing events and collecting unforgettable memories",
                             style: TextStyle(fontSize: 16, color: Color(0xFF757575)),
                           ),
                           const SizedBox(height: 24),
-                
-                          // Social Sign In Buttons
+
+                          // Google Sign-in
                           CustomButton.icon(
                             text: "Continue with Google",
-                            icon: Image.asset('assets/icons/google.png', height: 20, width: 20,),
+                            icon: Image.asset('assets/icons/google.png', height: 20, width: 20),
                             onPressed: () {
                               if (!_agreeToTerms) {
-                                Navigator.of(context).pop(); // Close the bottom sheet first
+                                Navigator.of(context).pop(); // Close sheet
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(
                                       "Please check the box to accept the TOS & Privacy Policy before continuing with Google.",
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(fontSize: 16, color: Colors.red), // Red color to indicate requirement
-                                      ),
-                                    backgroundColor: Colors.amber, // Gentle color for guidance
+                                      style: TextStyle(fontSize: 16, color: Colors.red),
+                                    ),
+                                    backgroundColor: Colors.amber,
                                     duration: Duration(seconds: 4),
                                   ),
                                 );
-                                return; // Don't proceed to sign up
+                                return;
                               }
-                              // Terms accepted, continue with Google sign-in
                               context.read<AuthBloc>().add(GoogleSignInRequested());
                             },
                           ),
-                
+
                           const SizedBox(height: 12),
-                
+
+                          // Apple Sign In
                           CustomButton.icon(
                             text: "Continue with Apple",
                             icon: Image.asset('assets/icons/apple.png', height: 30, width: 30,),
-                            onPressed: () async {
-                              Navigator.of(context).pop(); // Close bottom sheet
-                                await Future.delayed(Duration(milliseconds: 100)); // Give time for context rebuild
-                                if (!context.mounted) return; // Only proceed if the widget is still mounted
-                                context.read<AuthBloc>().add(AppleSignInRequested());
-                            }
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              context.read<AuthBloc>().add(AppleSignInRequested());
+                            },
                           ),
-                
+                          
                           const SizedBox(height: 12),
-                
+
+                          // X Sign-in
                           CustomButton.icon(
                             text: "Continue with X",
-                            icon: Image.asset('assets/icons/x.png', height: 30, width: 30,),
+                            icon: Image.asset('assets/icons/x.png', height: 30, width: 30),
                             onPressed: () {
-                              Navigator.of(context).pop(); // Close bottom sheet
+                              Navigator.pop(context);
                               context.read<AuthBloc>().add(XSignInRequested());
-                            }
+                            },
                           ),
-                
                           const SizedBox(height: 20),
-                
+
+                          // Divider
                           Row(
-                            children: [
-                              const Expanded(
-                                child: Divider(
-                                  color: Color(0xFF757575),
-                                  thickness: 1,
-                                ),
-                              ),
-                              const Padding(
+                            children: const [
+                              Expanded(child: Divider(color: Color(0xFF757575), thickness: 1)),
+                              Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 12),
-                                child: Text(
-                                  "Or",
-                                  style: TextStyle(color: Color(0xFF757575)),
-                                ),
+                                child: Text("Or", style: TextStyle(color: Color(0xFF757575))),
                               ),
-                              const Expanded(
-                                child: Divider(
-                                  color: Color(0xFF757575),
-                                  thickness: 1,
-                                ),
-                              ),
+                              Expanded(child: Divider(color: Color(0xFF757575), thickness: 1)),
                             ],
                           ),
-                
-                
                           const SizedBox(height: 20),
-                
+
                           // Email Input
                           Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white, // White background like the other buttons
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                              color: Color(0xFF757575),
-                            ),
-                            ),
-                            child: TextFormField(
-                              focusNode: _emailFocusNode,
-                              controller: _emailController,
-                              keyboardType: TextInputType.emailAddress,
-                              decoration: const InputDecoration(
-                                hintText: "youremail@example.com",
-                                hintStyle: TextStyle(fontSize: 18,  color: Color(0xFF757575),),
-                                border: InputBorder.none, // Remove default underline
-                                contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 12,), // Add spacing between characters and the input field (box)
-                              ),
-                              validator: (value) { // Added here for the time being. Full validation will be handled later
-                                if (value == null || !value.contains("@")) {
-                                  return "Enter a valid email";
-                                }
-                                return null;
-                              },
+                            key: _emailKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (_emailError != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 6),
+                                    child: Text(_emailError!,
+                                        style: const TextStyle(color: Colors.red, fontSize: 14)),
+                                  ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: const Color(0xFF757575)),
+                                  ),
+                                  child: TextFormField(
+                                    focusNode: _emailFocusNode,
+                                    controller: _emailController,
+                                    keyboardType: TextInputType.emailAddress,
+                                    decoration: const InputDecoration(
+                                      hintText: "youremail@example.com",
+                                      hintStyle: TextStyle(fontSize: 18, color: Color(0xFF757575)),
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                                    ),
+                                    onChanged: (_) => setState(() => _emailError = null),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                
                           const SizedBox(height: 20),
-                
+
                           // Password Input
                           Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white, // White background like the other buttons
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                              color: Color(0xFF757575),
-                            ),
-                            ),
-                            child: TextFormField(
-                              focusNode: _passwordFocusNode,
-                              controller: _passwordController,
-                              obscureText: _obscurePassword,
-                              keyboardType: TextInputType.visiblePassword,
-                              decoration: InputDecoration(
-                                hintText: "Create a password",
-                                hintStyle: const TextStyle(fontSize: 18,  color: Color(0xFF757575),),
-                                border: InputBorder.none, // Remove default underline
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12,), // Add spacing to the top and bottom, and between characters and the input field (box)
-                                suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                            key: _passwordKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (_passwordError != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 6),
+                                    child: Text(_passwordError!,
+                                        style: const TextStyle(color: Colors.red, fontSize: 14)),
+                                  ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: const Color(0xFF757575)),
+                                  ),
+                                  child: TextFormField(
+                                    focusNode: _passwordFocusNode,
+                                    controller: _passwordController,
+                                    obscureText: _obscurePassword,
+                                    keyboardType: TextInputType.visiblePassword,
+                                    decoration: InputDecoration(
+                                      hintText: "Create a password",
+                                      hintStyle: const TextStyle(fontSize: 18, color: Color(0xFF757575)),
+                                      border: InputBorder.none,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                                      suffixIcon: IconButton(
+                                        icon: Icon(
+                                          _obscurePassword
+                                              ? Icons.visibility_off
+                                              : Icons.visibility,
+                                        ),
+                                        onPressed: _togglePasswordVisibility,
+                                      ),
+                                    ),
+                                    onChanged: (_) => setState(() => _passwordError = null),
+                                  ),
                                 ),
-                                onPressed: _togglePasswordVisibility,
-                              ),
-                              ),
-
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "Password is required";
-                                }
-
-                                final password = value.trim();
-
-                                if (password.length < 8) {
-                                  return "Password must be at least 8 characters";
-                                }
-
-                                if (!RegExp(r'(?=.*[A-Z])').hasMatch(password)) {
-                                  return "Must include at least one uppercase letter";
-                                }
-
-                                if (!RegExp(r'(?=.*[a-z])').hasMatch(password)) {
-                                  return "Must include at least one lowercase letter";
-                                }
-
-                                if (!RegExp(r'(?=.*\d)').hasMatch(password)) {
-                                  return "Must include at least one number";
-                                }
-
-                                if (!RegExp(r'(?=.*[^A-Za-z0-9])').hasMatch(password)) {
-                                  return "Must include at least one special character";
-                                }
-
-                                return null;
-                              },
+                                const SizedBox(height: 8),
+                                const Center(
+                                  child: Text(
+                                    "Password must be at least 8 characters and include uppercase, lowercase, number, and special character.",
+                                    style: TextStyle(fontSize: 14, color: Color(0xFF757575)),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                )
+                              ],
                             ),
                           ),
-                
                           const SizedBox(height: 20),
-                
-                          // Terms and Policy Checkbox
+
+                          // Terms & Conditions
                           Row(
                             children: [
                               Checkbox(
@@ -346,13 +348,13 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                               Flexible(
                                 child: Wrap(
                                   children: [
-                                    const Text("I agree to the ", style: TextStyle(color: Color(0xFF757575), fontSize: 16,),),
+                                    const Text("I agree to the ",
+                                        style: TextStyle(color: Color(0xFF757575), fontSize: 16)),
                                     InkWell(
                                       onTap: () async {
-                                        // Open a URL or navigate in app
-                                        final Uri url = Uri.parse('https://example.com/terms'); // To be replaced with the actual URL
+                                        final Uri url = Uri.parse('https://example.com/terms');
                                         if (await canLaunchUrl(url)) {
-                                          await launchUrl(url, mode: LaunchMode.externalApplication); // In this case, open an external site
+                                          await launchUrl(url, mode: LaunchMode.externalApplication);
                                         }
                                       },
                                       child: const Text(
@@ -364,14 +366,13 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                                         ),
                                       ),
                                     ),
-                
-                                    const Text(" and ", style: TextStyle(color: Color(0xFF757575), fontSize: 16,),),
+                                    const Text(" and ",
+                                        style: TextStyle(color: Color(0xFF757575), fontSize: 16)),
                                     InkWell(
                                       onTap: () async {
-                                        // Open a URL or navigate in app
-                                        final Uri url = Uri.parse('https://example.com/terms'); // To be replaced with the actual URL
+                                        final Uri url = Uri.parse('https://example.com/terms');
                                         if (await canLaunchUrl(url)) {
-                                          await launchUrl(url, mode: LaunchMode.externalApplication); // In this case, open an external site
+                                          await launchUrl(url, mode: LaunchMode.externalApplication);
                                         }
                                       },
                                       child: const Text(
@@ -388,10 +389,9 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                               ),
                             ],
                           ),
-                
                           const SizedBox(height: 20),
-                
-                          // Create Account Button
+
+                          // Submit Button with Bloc state
                           BlocBuilder<AuthBloc, AuthState>(
                             builder: (context, state) {
                               final isLoading = state is AuthLoading;
@@ -399,6 +399,7 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                               return ElevatedButton(
                                 onPressed: _agreeToTerms && !isLoading ? _submitSignUp : null,
                                 style: ElevatedButton.styleFrom(
+                                  minimumSize: const Size(double.infinity, 50),
                                   backgroundColor: _agreeToTerms
                                       ? const Color(0xFF000000)
                                       : const Color(0xFFBDBDBD),
@@ -408,20 +409,19 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                                   ),
                                 ),
                                 child: isLoading
-                                    ? Center(
-                                      child: const SizedBox(
-                                          height: 20,
-                                          width: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2.5,
-                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                          ),
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.5,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(Colors.white),
                                         ),
-                                    )
+                                      )
                                     : Stack(
                                         alignment: Alignment.center,
-                                        children: [
-                                          const Center(
+                                        children: const [
+                                          Center(
                                             child: Text(
                                               "Create Account",
                                               style: TextStyle(
@@ -430,7 +430,7 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                                               ),
                                             ),
                                           ),
-                                          const Positioned(
+                                          Positioned(
                                             right: 0,
                                             child: Icon(
                                               Icons.arrow_forward,
@@ -443,15 +443,13 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                               );
                             },
                           ),
-
-                
                           const SizedBox(height: 24),
-                
-                          // Toggle to Login
+
+                          // Toggle to login
                           Center(
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.pop(context); // Close signup
+                                Navigator.pop(context);
                                 showModalBottomSheet(
                                   context: context,
                                   isScrollControlled: true,
@@ -480,20 +478,22 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                       ),
                     ),
                   ),
+                ),
               ),
-            ),
-            // Close (X) Button fixed at the top-right
-            Positioned(
-              top: -10.0,
-              right: 0,
-              child: IconButton(
-                icon: const Icon(Icons.close, size: 28),
-                onPressed: () => Navigator.pop(context),
+
+              // Close button (top right)
+              Positioned(
+                top: -10.0,
+                right: 0,
+                child: IconButton(
+                  icon: const Icon(Icons.close, size: 28),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
-            ),
-          ],
+            ],
           ),
         ),
-      );
+      ),
+    );
   }
 }

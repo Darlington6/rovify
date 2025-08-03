@@ -22,6 +22,13 @@ class SignInRequested extends AuthEvent {
   });
 }
 
+class ForgotPasswordRequested extends AuthEvent {
+  final String email;
+
+  ForgotPasswordRequested(this.email);
+}
+
+
 class SignOutRequested extends AuthEvent {}
 
 class GoogleSignInRequested extends AuthEvent {}

@@ -110,7 +110,7 @@ Before running this project, make sure you have:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/rovify.git
+git clone https://github.com/Darlington6/rovify.git
 cd rovify
 ```
 
@@ -220,7 +220,7 @@ The app requires location permissions for event discovery:
 
 If you encounter any issues:
 
-1. Check the [Issues](https://github.com/yourusername/rovify/issues) page
+1. Check the [Issues](https://github.com/Darlington6/rovify/issues) page
 2. Create a new issue with detailed information
 3. Include device information, Flutter version, and error logs
 
@@ -232,12 +232,12 @@ If you encounter any issues:
 
 ## Project Status
 
-- ✅ Authentication System
-- ✅ Event Management
-- ✅ Location Services
-- ✅ NFT Marketplace
-- ✅ User Profiles
-- 🔄 Push Notifications (In Progress)
-- 🔄 Advanced Search (Planned)
+- Authentication System
+- Event Management
+- Location Services
+- NFT Marketplace
+- User Profiles
+- Push Notifications
+- Advanced Search (Planned)
 
 ---

@@ -20,15 +20,17 @@ class LoadingButton extends StatelessWidget {
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
-          backgroundColor: Colors.orange,
+          backgroundColor: Color(0xFF000000),
+          foregroundColor: Colors.white,
         ),
         child: isLoading
             ? const CircularProgressIndicator(color: Colors.white)
             : Text(
                 text,
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
+                  color: Colors.white
                 ),
               ),
       ),
