@@ -245,9 +245,9 @@ flutter test --coverage
     <td><img src="./screenshots/splash3.jpeg" width="280" alt="Splash Screen 3"/></td>
   </tr>
   <tr>
-    <td align="center"><b>First Splash</b><br/>Welcome splash screen</td>
-    <td align="center"><b>Second Splash</b><br/>Second splash screen</td>
-    <td align="center"><b>Third Splash</b><br/>Third splash screen</td>
+    <td align="center">Welcome splash screen</td>
+    <td align="center">Second splash screen</td>
+    <td align="center">Third splash screen</td>
   </tr>
 </table>
 
@@ -262,6 +262,33 @@ flutter test --coverage
     <td align="center">Signup Screen</td>
     <td align="center">Login Screen</td>
     <td align="center">Forgot Password Screen</td>
+  </tr>
+</table>
+
+### Onboarding Screens
+<table>
+  <tr>
+    <td><img src="./screenshots/onboarding1.jpeg" width="280" alt="Onboarding First Screen"/></td>
+    <td><img src="./screenshots/onboarding2.jpeg" width="280" alt="Onboarding Second Screen"/></td>
+    <td><img src="./screenshots/onboarding3.jpeg" width="280" alt="Onboarding Third Screen"/></td>
+  </tr>
+  <tr>
+    <td align="center">Onboarding First Screen</td>
+    <td align="center">Onboarding Second Screen</td>
+    <td align="center">Onboarding Third Screen</td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td><img src="./screenshots/onboarding4.jpeg" width="280" alt="Onboarding Fourth Screen"/></td>
+    <td><img src="./screenshots/onboarding5.jpeg" width="280" alt="Onboarding Fifth Screen"/></td>
+    <td><img src="./screenshots/onboarding6.jpeg" width="280" alt="Onboarding Sixth Screen"/></td>
+  </tr>
+  <tr>
+    <td align="center">Onboarding Fourth Screen</td>
+    <td align="center">Onboarding Fifth Screen</td>
+    <td align="center">Onboarding Sixth Screen</td>
   </tr>
 </table>
 
