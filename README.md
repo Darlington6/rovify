@@ -319,6 +319,33 @@ flutter test --coverage
   </tr>
 </table>
 
+### Creator Dashboard Screens
+<table>
+  <tr>
+    <td><img src="./screenshots/create-event.jpeg" width="280" alt="Create New Event"/></td>
+    <td><img src="./screenshots/dashboard.jpeg" width="280" alt="Dahsboard"/></td>
+    <td><img src="./screenshots/my-events.jpeg" width="280" alt="My Events"/></td>
+  </tr>
+  <tr>
+    <td align="center">Create New Event</td>
+    <td align="center">Dahsboard</td>
+    <td align="center">My Events</td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td><img src="./screenshots/event-details.jpeg" width="280" alt="Event Details"/></td>
+    <td><img src="./screenshots/edit-event.jpeg" width="280" alt="Edit Event"/></td>
+    <td><img src="./screenshots/scan-tickets.jpeg" width="280" alt="Scan Tickets"/></td>
+  </tr>
+  <tr>
+    <td align="center">Event Details</td>
+    <td align="center">Edit Event</td>
+    <td align="center">Scan Tickets</td>
+  </tr>
+</table>
+
 ## Configuration
 
 ### Firebase Setup
