@@ -59,7 +59,8 @@ rovify/
 │   ├── splash-images/           # Splash screen assets
 │   ├── stack-images/            # Stack navigation assets
 │   └── tab-images/              # Tab navigation assets
-└── test/                        # Unit and widget tests
+├── test/                        # Unit and widget tests
+└── screenshots/                 # Screenshots for final output (app screens)
 
 ```
 
@@ -386,6 +387,7 @@ flutter test --coverage
   </tr>
 </table>
 
+---
 ## Configuration
 
 ### Firebase Setup
