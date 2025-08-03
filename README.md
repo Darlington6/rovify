@@ -292,6 +292,33 @@ flutter test --coverage
   </tr>
 </table>
 
+### Home Screens
+<table>
+  <tr>
+    <td><img src="./screenshots/explore.jpeg" width="280" alt="Explore Home Screen"/></td>
+    <td><img src="./screenshots/stream.jpeg" width="280" alt="Stream Home Screen"/></td>
+    <td><img src="./screenshots/create.jpeg" width="280" alt="Create Home Screen"/></td>
+  </tr>
+  <tr>
+    <td align="center">Explore Home Screen</td>
+    <td align="center">Stream Home Screen</td>
+    <td align="center">Create Home Screen</td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td><img src="./screenshots/marketplace.jpeg" width="280" alt="Marketplace Home Screen"/></td>
+    <td><img src="./screenshots/echo.jpeg" width="280" alt="Echo Home Screen"/></td>
+    <td><img src="./screenshots/profile-drawer.jpeg" width="280" alt="Profile Drawer Screen"/></td>
+  </tr>
+  <tr>
+    <td align="center">Marketplace Home Screen</td>
+    <td align="center">Echo Home Screen</td>
+    <td align="center">Profile Drawer Screen</td>
+  </tr>
+</table>
+
 ## Configuration
 
 ### Firebase Setup
